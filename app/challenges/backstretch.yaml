@@ -1,0 +1,5 @@
+name: "back stretch"
+author: "David Sean"
+challenge:
+  timeout: 60*3
+  description: "Stand up, and stretch your back"

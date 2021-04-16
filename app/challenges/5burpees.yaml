@@ -1,0 +1,5 @@
+name: "5 Burpees"
+author: "David Sean"
+challenge:
+  timeout: 60*5
+  description: "Do 5 burpees"

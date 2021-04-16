@@ -1,0 +1,5 @@
+name: "5 pushups"
+author: "David Sean"
+challenge:
+  timeout: 60*5
+  description: "Do 5 pushups"
