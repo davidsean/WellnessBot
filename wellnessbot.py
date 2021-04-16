@@ -17,7 +17,6 @@ client = discord.Client()
 async def task_runner():
     channel = client.get_channel(int(CHANNEL))
     c1 = Challenge(client, channel, 'Do 5 pushups', time=60*3, counter=1)
-    #c1 = Challenge(client, channel, 'Pick 5 boogers from Vit\'s nose', 2)
     await c1.post()
     await asyncio.sleep(60)
 
@@ -27,9 +26,7 @@ async def task_runner():
 async def on_ready():
     guild = discord.utils.find(lambda g: g.id == int(GUILD), client.guilds)
     channel = client.get_channel(int(CHANNEL))
-    await channel.send('test test')
-
-    #client.loop.create_task(task_runner())
+    client.loop.create_task(task_runner())
 
 @client.event
 async def on_message(message):
