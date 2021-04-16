@@ -9,6 +9,8 @@ from app.challenge_runner import ChallengeRunner
 from app.challenge import Challenge
 
 def load_challenges(path='./app/challenges'):
+    """ Loads all the yaml challengss
+    """
     files = glob.glob(f'{path}/*.yaml')
     challenges=[]
     for file in files:
@@ -16,7 +18,7 @@ def load_challenges(path='./app/challenges'):
             with open(file, 'r') as fp:
                 try:
                     ex = yaml.safe_load(fp)
-                    timeout = ex['challenge']['timeout']
+                    timeout = int(ex['challenge']['timeout'])
                     description = ex['challenge']['description']
                     challenges.append(Challenge(description,timeout=timeout))
                 except yaml.YAMLError as exp:
@@ -41,7 +43,7 @@ async def on_ready():
     channel = client.get_channel(int(CHANNEL))
     cr = ChallengeRunner(client, channel)
     for challenge in load_challenges():
-        cr.add(challenge)
+        cr.add_challenge(challenge)
     client.loop.create_task(task_runner(cr))
 
 @client.event

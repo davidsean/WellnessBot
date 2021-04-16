@@ -1,5 +1,5 @@
 name: "mrh"
 author: "David Sean"
 challenge:
-  timeout: ""
-  description: ""
+  timeout: 60
+  description: "stretch"

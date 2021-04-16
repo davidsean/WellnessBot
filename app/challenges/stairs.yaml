@@ -1,5 +1,5 @@
 name: "stairs"
 author: "David Sean"
 challenge:
-  timeout: 60*10
+  timeout: 600
   description: "Go up and down a flight of stairs"
