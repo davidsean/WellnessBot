@@ -33,8 +33,9 @@ CHANNEL = os.getenv('CHANNEL_ID')
 client = discord.Client()
 
 async def task_runner(cr):
-    await cr.post()
-    await asyncio.sleep(60*60)
+    while True:
+        await cr.post()
+        await asyncio.sleep(60*60)
 
 
 @client.event
