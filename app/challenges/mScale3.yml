@@ -1,5 +1,5 @@
 name: "Minor scale"
-author: "David Sean"
+author: "Paul Laplante"
 challenge:
   timeout: 300
   description: "Play a minor scale on the guitar over 3 octaves"
