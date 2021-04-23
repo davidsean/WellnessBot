@@ -14,9 +14,9 @@ class ChallengeRunner:
     'skipped':'😴'
     }
 
-    def __init__(self, client, channel):
-        self.client=client
-        self.channel=channel
+    def __init__(self, ctx, bot):
+         self.ctx = ctx
+        self.bot=bot
         self.message = None
         self.challenges = []
 
@@ -26,27 +26,28 @@ class ChallengeRunner:
     async def post(self):
         c = random.choice(self.challenges)
         payload = f'{ChallengeRunner.intro}. {c}'
-        self.message = await self.channel.send(payload)
+        self.message = await self.ctx.send(payload)
         await self._add_reactions()
         await asyncio.sleep(c.get_timeout())
-        await self._tally()
+        users = await self._tally()
+        return users
 
     def get_message(self):
         return self.message
 
     async def _tally(self):
-        self.message = await self.channel.fetch_message(self.message.id)
+        self.message = await self.ctx.fetch_message(self.message.id)
 
         if self.message is not None:
             r_done = discord.utils.find(lambda r: str(r.emoji) == ChallengeRunner.reactions['done'], self.message.reactions)
 
             payload="Challenge over, good job "
             async for u in r_done.users():
-                if not u  == self.client.user:
+                if not u  == self.bot.user:
                     payload = payload +" "+ str(u)
             await self.message.delete()
-            await self.channel.send(payload)
-            return (r_done.count)
+            await self.ctx.send(payload)
+            return r_done.users
 
     async def _add_reactions(self):
         if self.message is not None:
