@@ -15,7 +15,7 @@ class ChallengeRunner:
     }
 
     def __init__(self, ctx, bot):
-         self.ctx = ctx
+        self.ctx = ctx
         self.bot=bot
         self.message = None
         self.challenges = []

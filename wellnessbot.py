@@ -43,7 +43,7 @@ async def day_runner(cr, duration_hours=8):
     global user_stats
     for t in range(duration_hours):
         users = await cr.post()
-        for u in users:
+        for u in [str(user) for user in users]:
             if u in user_stats:
                user_stats[u]+=1
             else:
@@ -84,13 +84,14 @@ async def reset(ctx):
 async def stats(ctx):
     print(f'stats command sent by {ctx.author}')
     global user_stats
+    print(user_stats)
     msg=''
     sorted_res = sorted(user_stats.items(), key=lambda kv: kv[1], reverse=True)
     arrow = 'Congrats! -->'
     for u in sorted_res:
         msg += f'{arrow} {u[0]} has {u[1]} points\n'
         arrow = '             '
-        
+
     if  msg =='':
         await ctx.send('Sorry, empty stats')
     else:
