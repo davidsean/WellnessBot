@@ -1,0 +1,5 @@
+name: "Crunchies!"
+author: "christian"
+challenge:
+  timeout: 300
+  description: "Do 10 crunches"
