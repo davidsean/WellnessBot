@@ -1,0 +1,5 @@
+name: "10 Ice Climbers"
+author: "Christian S"
+challenge:
+  timeout: 300
+  description: "Do 10 ice-climbers: https://www.youtube.com/watch?v=_MXPvwMFiGE"
