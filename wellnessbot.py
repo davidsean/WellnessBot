@@ -4,30 +4,29 @@ import glob
 from discord.ext import commands
 
 import asyncio
-
+import random
 from dotenv import load_dotenv
 from app.challenge_runner import ChallengeRunner
 from app.challenge import Challenge
 
-
-def load_challenges(path='./app/challenges'):
+def load_random_challenge(path='./app/challenges'):
     """ Loads all the yaml challengss
     """
     files = glob.glob(f'{path}/*.yaml')
-    challenges=[]
-    for file in files:
-        if not file == f'{path}/challenge_template.yaml':
-            with open(file, 'r') as fp:
-                try:
-                    ex = yaml.safe_load(fp)
-                    timeout = int(ex['challenge']['timeout'])
-                    description = ex['challenge']['description']
-                    challenges.append(Challenge(description,timeout=timeout))
-                except yaml.YAMLError as exp:
-                    print(exp)
-    return challenges
-
+    # remove template
+    files.pop(files.index(f'{path}/challenge_template.yaml'))
+    file = random.choice(files)
+    with open(file, 'r') as fp:
+        try:
+            ex = yaml.safe_load(fp)
+            timeout = int(ex['challenge']['timeout'])
+            description = ex['challenge']['description']
+            challenge = Challenge(description,timeout=timeout)
+        except yaml.YAMLError as exp:
+            print(exp)
+    return challenge
 load_dotenv()
+
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
 CHANNEL = os.getenv('CHANNEL_ID')
@@ -41,7 +40,7 @@ async def day_runner(cr, duration_hours=8):
     global force_stop
     global user_stats
     for t in range(duration_hours):
-        users = await cr.post()
+        users = await cr.post(load_random_challenge())
         for u in users:
             if u in user_stats:
                user_stats[u]+=1
@@ -61,8 +60,6 @@ async def start_day(ctx):
     global force_stop
     force_stop = False
     cr = ChallengeRunner(ctx, bot)
-    for challenge in load_challenges():
-        cr.add_challenge(challenge)
     bot.loop.create_task(day_runner(cr))
 
 @bot.command(name='stop', help='stop the challenge runnder')
@@ -72,12 +69,23 @@ async def stop_day(ctx):
     force_stop = True
     await ctx.send("Day is over")
 
+@bot.command(name='challenge', help='give a random challenge')
+async def challenge(ctx):
+    print(f'challenge command sent by {ctx.author}')
+    global user_stats
+    cr = ChallengeRunner(ctx, bot)
+    users = await cr.post(load_random_challenge())
+    for u in users:
+        if u in user_stats:
+            user_stats[u]+=1
+        else:
+            user_stats[u]=1
+
 @bot.command(name='reset', help='reset usage challenge statistics')
 async def reset(ctx):
     print(f'reset command sent by {ctx.author}')
     global user_stats
     user_stats = {}
-    pass
 
 @bot.command(name='stats', help='shows current challenge stats')
 async def stats(ctx):
@@ -89,7 +97,7 @@ async def stats(ctx):
     arrow = 'Congrats! -->'
     for u in sorted_res:
         msg += f'{arrow} {u[0]} has {u[1]} points\n'
-        arrow = '             '
+        arrow = '                   '
 
     if  msg =='':
         await ctx.send('Sorry, empty stats')

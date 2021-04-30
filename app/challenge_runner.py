@@ -1,8 +1,6 @@
 
 import asyncio
-import random
 import discord
-from .challenge import Challenge
 
 class ChallengeRunner:
     """
@@ -10,8 +8,8 @@ class ChallengeRunner:
     """
     intro = 'Wellness challenge'
     reactions = {
-    'done':'🤸',
-    'skipped':'😴'
+        'done':'🤸',
+        'skipped':'😴'
     }
 
     def __init__(self, ctx, bot):
@@ -23,12 +21,11 @@ class ChallengeRunner:
     def add_challenge(self, challenge):
         self.challenges.append(challenge)
 
-    async def post(self):
-        c = random.choice(self.challenges)
-        payload = f'{ChallengeRunner.intro}. {c}'
+    async def post(self,challenge):
+        payload = f'{ChallengeRunner.intro}. {challenge}'
         self.message = await self.ctx.send(payload)
         await self._add_reactions()
-        await asyncio.sleep(c.get_timeout())
+        await asyncio.sleep(challenge.get_timeout())
         users = await self._tally()
         return users
 
