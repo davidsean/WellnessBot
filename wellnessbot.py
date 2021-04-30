@@ -1,7 +1,6 @@
 import os
 import yaml
 import glob
-import discord
 from discord.ext import commands
 
 import asyncio
@@ -43,7 +42,7 @@ async def day_runner(cr, duration_hours=8):
     global user_stats
     for t in range(duration_hours):
         users = await cr.post()
-        for u in [str(user) for user in users]:
+        for u in users:
             if u in user_stats:
                user_stats[u]+=1
             else:

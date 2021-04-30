@@ -35,19 +35,24 @@ class ChallengeRunner:
     def get_message(self):
         return self.message
 
-    async def _tally(self):
+    async def _tally(self) -> list:
+        """
+        returns a list of usernames
+        """
         self.message = await self.ctx.fetch_message(self.message.id)
 
         if self.message is not None:
             r_done = discord.utils.find(lambda r: str(r.emoji) == ChallengeRunner.reactions['done'], self.message.reactions)
 
             payload="Challenge over, good job "
+            user_str = []
             async for u in r_done.users():
                 if not u  == self.bot.user:
                     payload = payload +" "+ str(u)
+                    user_str.append(str(u))
             await self.message.delete()
             await self.ctx.send(payload)
-            return r_done.users
+            return user_str
 
     async def _add_reactions(self):
         if self.message is not None:

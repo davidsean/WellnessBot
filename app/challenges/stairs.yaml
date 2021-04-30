@@ -1,5 +1,0 @@
-name: "stairs"
-author: "David Sean"
-challenge:
-  timeout: 600
-  description: "Go up and down a flight of stairs"
