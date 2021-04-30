@@ -1,8 +1,6 @@
 
 import asyncio
-import random
 import discord
-from .challenge import Challenge
 
 class ChallengeRunner:
     """
@@ -10,8 +8,8 @@ class ChallengeRunner:
     """
     intro = 'Wellness challenge'
     reactions = {
-    'done':'🤸',
-    'skipped':'😴'
+        'done':'🤸',
+        'skipped':'😴'
     }
 
     def __init__(self, ctx, bot):

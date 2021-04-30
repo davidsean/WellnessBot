@@ -21,7 +21,7 @@ def load_random_challenge(path='./app/challenges'):
             ex = yaml.safe_load(fp)
             timeout = int(ex['challenge']['timeout'])
             description = ex['challenge']['description']
-            challenge = Challenge(description,timeout=timeout))
+            challenge = Challenge(description,timeout=timeout)
         except yaml.YAMLError as exp:
             print(exp)
     return challenge
@@ -69,12 +69,23 @@ async def stop_day(ctx):
     force_stop = True
     await ctx.send("Day is over")
 
+@bot.command(name='challenge', help='give a random challenge')
+async def challenge(ctx):
+    print(f'challenge command sent by {ctx.author}')
+    global user_stats
+    cr = ChallengeRunner(ctx, bot)
+    users = await cr.post(load_random_challenge())
+    for u in users:
+        if u in user_stats:
+            user_stats[u]+=1
+        else:
+            user_stats[u]=1
+
 @bot.command(name='reset', help='reset usage challenge statistics')
 async def reset(ctx):
     print(f'reset command sent by {ctx.author}')
     global user_stats
     user_stats = {}
-    pass
 
 @bot.command(name='stats', help='shows current challenge stats')
 async def stats(ctx):
