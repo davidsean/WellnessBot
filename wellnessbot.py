@@ -64,10 +64,17 @@ async def start_day(ctx):
 
 @bot.command(name='stop', help='stop the challenge runnder')
 async def stop_day(ctx):
-    print(f'start day command sent by {ctx.author}')
+    print(f'stop day command sent by {ctx.author}')
     global force_stop
     force_stop = True
     await ctx.send("Day is over")
+
+@bot.command(name='shutup', help='stop the challenge runnder')
+async def stop_day(ctx):
+    print(f'shutup command sent by {ctx.author}')
+    global force_stop
+    force_stop = True
+    await ctx.send("Ok, goodbye")
 
 @bot.command(name='challenge', help='give a random challenge')
 async def challenge(ctx):
