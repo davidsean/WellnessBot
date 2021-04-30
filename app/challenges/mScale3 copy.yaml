@@ -1,0 +1,5 @@
+name: "Minor scale"
+author: "Paul Laplante"
+challenge:
+  timeout: 300
+  description: "Play a major scale on the guitar over 3 octaves"
