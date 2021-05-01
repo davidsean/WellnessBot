@@ -3,14 +3,15 @@ import yaml
 import glob
 import random
 import asyncio
-
+from pathlib import Path
 from discord.ext import commands
 from app.challenge import Challenge
 from app.challenge_runner import ChallengeRunner
 
-def load_random_challenge(path='./app/challenges'):
+def load_random_challenge():
     """ Loads all the yaml challengss
     """
+    path = str(Path(__file__).parent.joinpath('challenges'))
     files = glob.glob(f'{path}/*.yaml')
     # remove template
     files.pop(files.index(f'{path}/challenge_template.yaml'))
