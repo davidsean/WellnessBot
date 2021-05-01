@@ -1,13 +1,12 @@
 import os
 import yaml
 import glob
-from discord.ext import commands
-
-import asyncio
 import random
-from dotenv import load_dotenv
-from app.challenge_runner import ChallengeRunner
+import asyncio
+
+from discord.ext import commands
 from app.challenge import Challenge
+from app.challenge_runner import ChallengeRunner
 
 def load_random_challenge(path='./app/challenges'):
     """ Loads all the yaml challengss
@@ -25,7 +24,6 @@ def load_random_challenge(path='./app/challenges'):
         except yaml.YAMLError as exp:
             print(exp)
     return challenge
-load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
