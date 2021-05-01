@@ -2,7 +2,7 @@
 It that posts challenges and shows results at the end of a work week
 
 # Quickstart
-copy `sample.,env` into `.env` and fill in the values.
+copy `sample.env` into `.env` and fill in the values.
 
 Install prerequisits
 ```bash
