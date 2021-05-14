@@ -10,5 +10,5 @@ help:
 		 }' $(MAKEFILE_LIST)
 
 .PHONY: test 
-setup: ## run server locally sourcing tokens from .env
+test: ## run server locally sourcing tokens from .env
 	@./scripts/test.sh
