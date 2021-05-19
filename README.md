@@ -1,5 +1,5 @@
 # Discord Wellness Bot 
-
+[![PyPI version](https://badge.fury.io/py/Wellness-Bot.svg)](https://badge.fury.io/py/Wellness-Bot)
 <p align="center">
   <img src="/docs/cartwheel.png"></img>
 </p>
