@@ -17,10 +17,10 @@ test: ## run server locally sourcing tokens from .env
 build: ## build package dist 
 	@./scripts/build.sh
 
-.PHONY: publish 
+.PHONY: publish
 publish: ## publish dist to pypi
-	@./scripts/publish.sh
+	@./scripts/publish.sh $(service)
 
-.PHONY: server 
-server: ## build server docker image
+.PHONY: arm 
+arm: ## build arm server docker image
 	@./scripts/docker.sh
