@@ -12,3 +12,15 @@ help:
 .PHONY: test 
 test: ## run server locally sourcing tokens from .env
 	@./scripts/test.sh
+
+.PHONY: build 
+build: ## build package dist 
+	@./scripts/build.sh
+
+.PHONY: publish 
+publish: ## publish dist to pypi
+	@./scripts/publish.sh
+
+.PHONY: server 
+server: ## build server docker image
+	@./scripts/docker.sh
