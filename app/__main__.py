@@ -7,8 +7,6 @@ import tempfile
 from pathlib import Path
 from discord.ext import commands
 
-from unqlite import UnQLite
-
 from app.challenge import Challenge
 from app.challenge_runner import ChallengeRunner
 from app.decorators import in_wellness_channel
@@ -40,15 +38,6 @@ bot = commands.Bot(command_prefix='!')
 force_stop = False
 user_stats = {}
 
-db_file = tempfile.NamedTemporaryFile()
-db = UnQLite(db_file.name)
-
-# use a transaction context to lock during IO
-with db.transaction():
-    #create a "week-runner" collection (for store all stats)
-    week_run = db.collection('week_run')
-    week_run.create()
-
 
 
 async def day_runner(cr, duration_hours=8):
@@ -56,21 +45,13 @@ async def day_runner(cr, duration_hours=8):
     global force_stop
     global user_stats
 
-    with db.transaction(): 
-        #create a "day-runner" collection (to store daily stats)
-        day_run = db.collection('day_run')
-        day_run.create()
-    #    week_run.add(day_run)
-    #print(db)
-
     for t in range(duration_hours):
         users = await cr.post(load_random_challenge())
         for u in users:
-            with db.transaction():
-                if u in user_stats:
-                    user_stats[u]+=1
-                else:
-                    user_stats[u]=1
+            if u in user_stats:
+                user_stats[u]+=1
+            else:
+                user_stats[u]=1
         await asyncio.sleep(60*60)
         if force_stop:
             break
