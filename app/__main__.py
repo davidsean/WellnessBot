@@ -4,14 +4,15 @@ import glob
 import random
 import asyncio
 import tempfile
-from pathlib import Path
-from discord.ext import commands
 
+from pathlib import Path
 from unqlite import UnQLite
+from discord.ext import commands
+from datetime import datetime, timezone
 
 from app.challenge import Challenge
-from app.challenge_runner import ChallengeRunner
 from app.decorators import in_wellness_channel
+from app.challenge_runner import ChallengeRunner
 
 def load_random_challenge():
     """ Loads all the yaml challengss
@@ -48,25 +49,34 @@ with db.transaction():
     #create a "week-runner" collection (for store all stats)
     week_run = db.collection('week_run')
     week_run.create()
-
-
+    day_run = db.collection('day_run')
+    day_run.create()
+    users_db = db.collection('users')
+    users_db.create()
 
 async def day_runner(cr, duration_hours=8):
     # launch duration_hours tasks for the whole day (once an hour)
     global force_stop
+    global db
     global user_stats
 
+    # create a "day-runner" entry and add to week_run
     with db.transaction(): 
-        #create a "day-runner" collection (to store daily stats)
-        day_run = db.collection('day_run')
-        day_run.create()
-    #    week_run.add(day_run)
-    #print(db)
+        _date = datetime.now(timezone.utc).isoformat()
+        day_run.store({'date': _date})
+        day_id = day_run.last_record_id()    
+        week_id = week_run.last_record_id()
+        week_run[week_id].store({'day_id':day_id})
 
     for t in range(duration_hours):
         users = await cr.post(load_random_challenge())
+
+        # TODO: add challenge_id (with unique id counter--even for duplicate challenges) to day_run
         for u in users:
-            with db.transaction():
+            # TODO: add successful users to challenge
+            # count all user[name]==name in all challenges to knwo daily score  
+            # with db.transaction():
+            #     users_db.store({'name': u})
                 if u in user_stats:
                     user_stats[u]+=1
                 else:
@@ -79,8 +89,6 @@ async def day_runner(cr, duration_hours=8):
 @bot.event
 async def on_ready():
     print('wellness bot is ready')
-
-
 
 @bot.command(name='start', help='Starts an 8-hour challenge runner')
 @in_wellness_channel
