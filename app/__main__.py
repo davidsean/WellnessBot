@@ -103,7 +103,7 @@ async def stats(ctx):
     arrow = 'Congrats! -->'
     for u in sorted_res:
         msg += f'{arrow} {u[0]} has {u[1]} points\n'
-        arrow = '                   '
+        arrow = '                       '
 
     if  msg =='':
         await ctx.send('Sorry, empty stats')
