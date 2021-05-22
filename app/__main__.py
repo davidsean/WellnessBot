@@ -3,10 +3,15 @@ import yaml
 import glob
 import random
 import asyncio
+import tempfile
 from pathlib import Path
 from discord.ext import commands
+
+from unqlite import UnQLite
+
 from app.challenge import Challenge
 from app.challenge_runner import ChallengeRunner
+from app.decorators import in_wellness_channel
 
 def load_random_challenge():
     """ Loads all the yaml challengss
@@ -28,32 +33,57 @@ def load_random_challenge():
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
-CHANNEL = os.getenv('CHANNEL_ID')
 
 bot = commands.Bot(command_prefix='!')
+
+
 force_stop = False
 user_stats = {}
+
+db_file = tempfile.NamedTemporaryFile()
+db = UnQLite(db_file.name)
+
+# use a transaction context to lock during IO
+with db.transaction():
+    #create a "week-runner" collection (for store all stats)
+    week_run = db.collection('week_run')
+    week_run.create()
+
+
 
 async def day_runner(cr, duration_hours=8):
     # launch duration_hours tasks for the whole day (once an hour)
     global force_stop
     global user_stats
+
+    with db.transaction(): 
+        #create a "day-runner" collection (to store daily stats)
+        day_run = db.collection('day_run')
+        day_run.create()
+    #    week_run.add(day_run)
+    #print(db)
+
     for t in range(duration_hours):
         users = await cr.post(load_random_challenge())
         for u in users:
-            if u in user_stats:
-               user_stats[u]+=1
-            else:
-                user_stats[u]=1
+            with db.transaction():
+                if u in user_stats:
+                    user_stats[u]+=1
+                else:
+                    user_stats[u]=1
         await asyncio.sleep(60*60)
         if force_stop:
             break
+
 
 @bot.event
 async def on_ready():
     print('wellness bot is ready')
 
+
+
 @bot.command(name='start', help='Starts an 8-hour challenge runner')
+@in_wellness_channel
 async def start_day(ctx):
     print(f'start day command sent by {ctx.author}')
     global force_stop
@@ -62,6 +92,7 @@ async def start_day(ctx):
     bot.loop.create_task(day_runner(cr))
 
 @bot.command(name='stop', help='stop the challenge runnder')
+@in_wellness_channel
 async def stop_day(ctx):
     print(f'stop day command sent by {ctx.author}')
     global force_stop
@@ -69,6 +100,7 @@ async def stop_day(ctx):
     await ctx.send("Day is over")
 
 @bot.command(name='shutup', help='stop the challenge runnder')
+@in_wellness_channel
 async def stop_day(ctx):
     print(f'shutup command sent by {ctx.author}')
     global force_stop
@@ -76,6 +108,7 @@ async def stop_day(ctx):
     await ctx.send("Ok, goodbye")
 
 @bot.command(name='challenge', help='give a random challenge')
+@in_wellness_channel
 async def challenge(ctx):
     print(f'challenge command sent by {ctx.author}')
     global user_stats
@@ -88,12 +121,14 @@ async def challenge(ctx):
             user_stats[u]=1
 
 @bot.command(name='reset', help='reset usage challenge statistics')
+@in_wellness_channel
 async def reset(ctx):
     print(f'reset command sent by {ctx.author}')
     global user_stats
     user_stats = {}
 
 @bot.command(name='stats', help='shows current challenge stats')
+@in_wellness_channel
 async def stats(ctx):
     print(f'stats command sent by {ctx.author}')
     global user_stats
