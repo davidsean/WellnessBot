@@ -3,7 +3,6 @@ import yaml
 import glob
 import random
 import asyncio
-import tempfile
 from pathlib import Path
 from discord.ext import commands
 
