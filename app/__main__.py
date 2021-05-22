@@ -5,8 +5,10 @@ import random
 import asyncio
 from pathlib import Path
 from discord.ext import commands
+
 from app.challenge import Challenge
 from app.challenge_runner import ChallengeRunner
+from app.decorators import in_wellness_channel
 
 def load_random_challenge():
     """ Loads all the yaml challengss
@@ -28,32 +30,40 @@ def load_random_challenge():
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
-CHANNEL = os.getenv('CHANNEL_ID')
 
 bot = commands.Bot(command_prefix='!')
+
+
 force_stop = False
 user_stats = {}
+
+
 
 async def day_runner(cr, duration_hours=8):
     # launch duration_hours tasks for the whole day (once an hour)
     global force_stop
     global user_stats
+
     for t in range(duration_hours):
         users = await cr.post(load_random_challenge())
         for u in users:
             if u in user_stats:
-               user_stats[u]+=1
+                user_stats[u]+=1
             else:
                 user_stats[u]=1
         await asyncio.sleep(60*60)
         if force_stop:
             break
 
+
 @bot.event
 async def on_ready():
     print('wellness bot is ready')
 
+
+
 @bot.command(name='start', help='Starts an 8-hour challenge runner')
+@in_wellness_channel
 async def start_day(ctx):
     print(f'start day command sent by {ctx.author}')
     global force_stop
@@ -62,6 +72,7 @@ async def start_day(ctx):
     bot.loop.create_task(day_runner(cr))
 
 @bot.command(name='stop', help='stop the challenge runnder')
+@in_wellness_channel
 async def stop_day(ctx):
     print(f'stop day command sent by {ctx.author}')
     global force_stop
@@ -69,6 +80,7 @@ async def stop_day(ctx):
     await ctx.send("Day is over")
 
 @bot.command(name='shutup', help='stop the challenge runnder')
+@in_wellness_channel
 async def stop_day(ctx):
     print(f'shutup command sent by {ctx.author}')
     global force_stop
@@ -76,6 +88,7 @@ async def stop_day(ctx):
     await ctx.send("Ok, goodbye")
 
 @bot.command(name='challenge', help='give a random challenge')
+@in_wellness_channel
 async def challenge(ctx):
     print(f'challenge command sent by {ctx.author}')
     global user_stats
@@ -88,12 +101,14 @@ async def challenge(ctx):
             user_stats[u]=1
 
 @bot.command(name='reset', help='reset usage challenge statistics')
+@in_wellness_channel
 async def reset(ctx):
     print(f'reset command sent by {ctx.author}')
     global user_stats
     user_stats = {}
 
 @bot.command(name='stats', help='shows current challenge stats')
+@in_wellness_channel
 async def stats(ctx):
     print(f'stats command sent by {ctx.author}')
     global user_stats
@@ -103,7 +118,7 @@ async def stats(ctx):
     arrow = 'Congrats! -->'
     for u in sorted_res:
         msg += f'{arrow} {u[0]} has {u[1]} points\n'
-        arrow = '                   '
+        arrow = '                       '
 
     if  msg =='':
         await ctx.send('Sorry, empty stats')
