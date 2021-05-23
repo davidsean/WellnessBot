@@ -25,7 +25,7 @@ services:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASS: ${MONGO_PASS}
       MONGO_PORT: ${MONGO_PORT}
-      MONGO_HOST: ${MONGO_HOST}
+      MONGO_HOST: localhost 
     depends_on:
       - mongodb
     networks:
