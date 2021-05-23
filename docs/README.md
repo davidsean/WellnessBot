@@ -1,6 +1,6 @@
 # Development Guide
 
-# DB design
+## DB design
 ### The `challenge_pool`
 The `challenge_pool` holds a set of challenges.
 An example of single entry in the `challenge_pool` can be:
