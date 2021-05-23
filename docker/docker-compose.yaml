@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  mongodb:
+  wb-db:
     image: mongo:latest
     container_name: ${MONGO_HOST} 
     ports:
@@ -25,9 +25,9 @@ services:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASS: ${MONGO_PASS}
       MONGO_PORT: ${MONGO_PORT}
-      MONGO_HOST: localhost 
+      MONGO_HOST: ${MONGO_HOST} 
     depends_on:
-      - mongodb
+      - wb-db
     networks:
       - db
 
