@@ -3,12 +3,12 @@ version: '3.9'
 services:
   mongodb:
     image: mongo:latest
-    container_name: ${MONGO_NAME} 
+    container_name: ${MONGO_HOST} 
     ports:
       - '${MONGO_PORT}:${MONGO_PORT}'
     environment:
-        MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER} 
-        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER} 
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
     volumes:
       - mongodb:/data/db
     networks:
@@ -17,7 +17,7 @@ services:
     container_name: wellness-bot
     # env file specification required due to build context
     env_file: 
-      - .env
+      - ../.env
     build:
       context: ../ 
       dockerfile: docker/x86/Dockerfile
@@ -25,6 +25,7 @@ services:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASS: ${MONGO_PASS}
       MONGO_PORT: ${MONGO_PORT}
+      MONGO_HOST: ${MONGO_HOST}
     depends_on:
       - mongodb
     networks:
