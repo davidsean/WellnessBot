@@ -2,6 +2,7 @@ import os
 import yaml
 import glob
 import random
+import time
 import asyncio
 from pathlib import Path
 from datetime import datetime, timezone
@@ -30,6 +31,9 @@ def load_random_challenge():
             print(exp)
     return challenge
 
+time.sleep(10)
+
+print("Context checkpoint")
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
 # mongo container initialization
@@ -39,9 +43,8 @@ MONGO_PORT=os.getenv('MONGO_PORT')
 MONGO_HOST=os.getenv('MONGO_HOST')
 
 MONGO_URI = 'mongodb://{}:{}/'.format(MONGO_HOST,MONGO_PORT)
-print("Connecting to mongo container as user {} and port {}".format(MONGO_USER, MONGO_PORT))
 client = MongoClient(MONGO_URI, username=MONGO_USER, password=MONGO_PASS)
-print("Successfully connected to {}".format(MONGO_URI))
+print("Created mongo client as user {} @ {}".format(MONGO_USER, MONGO_URI))
 
 bot = commands.Bot(command_prefix='!')
 
