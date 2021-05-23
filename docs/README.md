@@ -2,8 +2,8 @@
 
 # DB design
 ### The `challenge_pool`
-`challenge_pool` holds a set of challenges
-An example of single challenge can be:
+The `challenge_pool` holds a set of challenges.
+An example of single entry in the `challenge_pool` can be:
 ```json
 {
 "id": 9,
@@ -20,7 +20,17 @@ Since `challenge_pool` is a set, all challenges it holds are unique.
 Initially, the pool is populated from challenges stored as yaml files under the `challenges/` directory.
 It will eventually be possible to dynamically add new challenges directly from Discord using `!add_challenge` command.
 
-### The `issued_challenge`
+### The `users` collection
+This one is straight-forward:
+```json
+{
+"id": 9,
+"name": "dav#6692"
+}
+```
+We would have to be carefull that this doesn't grow indefinitely. Perhaps a last-activity field so that old one can be pruned after inactivity?
+
+### The `issued_challenge` collection
 
 An `issued_challenge` is created after the challenge timeout is reached.
 It contains a `challenge_id` that references a challenge from the `challenge_pool`, and contains a list of `user_ids` that references users that participated.
@@ -28,26 +38,14 @@ And example `issued_challenge` entry would look like:
 ```json
 {
 "id": 5,
+"date": "2021-05-22T22:16:58+00:00",
 "challenge_id": 2,
 "user_ids": [2, 3 ,6, 7],
 }
 ```
-### The `day_runner`
-A `day_runner` is a collection of `issued_challenge` issued during a specific day.
-These challenges can be issued from a work-day schedule (via the `!start` command), or be an unscheduled challenge issued via the `!challenge` command.
 
-An example `day_runner` entry would look like
-```json
-{
-"id": 3,
-"date": "2021-05-22T22:16:58+00:00",
-"issued_challenges": [3, 4, 5, 6] 
-}
-```
-Note, idealy, one would be appending the `issued_challenges` list, but that's not directly possible do we'll have to read and re-write that full field.
-
-### The `week_runner` ?
-Lastly, one could want to create a `week_runner` to hold multiple `day_runner` entries. This is not technically needed, as we can figure out which entries belong in which week.
+With these three collections, we can compute stats over a day or a week... or year (can count in dates intervals).
+The `!reset` command can be deprecated since weeks/days are automatic
 
 ## Packaging and Deploying
 This repository hosts the `WellnessBot` client package. It is hosted on `pypi` and can be installed on any machine using pip:
