@@ -31,8 +31,6 @@ def load_random_challenge():
             print(exp)
     return challenge
 
-time.sleep(10)
-
 print("Context checkpoint")
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
