@@ -24,3 +24,7 @@ publish: ## publish dist to pypi
 .PHONY: arm 
 arm: ## build arm server docker image
 	@./scripts/docker.sh
+
+.PHONY: compose 
+compose: ## build wellness bot for x86
+	@./scripts/compose.sh
