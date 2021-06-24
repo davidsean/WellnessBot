@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  wb-db:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mongodb:/data/db
+    networks:
+      - db
+  wellness-bot:
+    container_name: wellness-bot
+    # env file specification required due to build context
+    env_file: 
+      - ../.env
+    build:
+      context: ../ 
+      dockerfile: docker/x86/Dockerfile
+    environment:
+      MONGO_USER: root
+      MONGO_PASS: rootpassword
+      MONGO_PORT: 27017
+      MONGO_HOST: mongodb
+    depends_on:
+      - wb-db
+    networks:
+      - db
+
+volumes:
+  mongodb:
+
+networks:
+  db:
+    driver: bridge

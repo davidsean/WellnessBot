@@ -2,9 +2,12 @@ import os
 import yaml
 import glob
 import random
+import time
 import asyncio
 from pathlib import Path
+from datetime import datetime, timezone
 from discord.ext import commands
+from pymongo import MongoClient
 
 from app.challenge import Challenge
 from app.challenge_runner import ChallengeRunner
@@ -28,16 +31,23 @@ def load_random_challenge():
             print(exp)
     return challenge
 
+print("Context checkpoint")
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD_ID')
+# mongo container initialization
+MONGO_USER=os.getenv('MONGO_USER')
+MONGO_PASS=os.getenv('MONGO_PASS')
+MONGO_PORT=os.getenv('MONGO_PORT')
+MONGO_HOST=os.getenv('MONGO_HOST')
+
+MONGO_URI = 'mongodb://{}:{}/'.format(MONGO_HOST,MONGO_PORT)
+client = MongoClient(MONGO_URI, username=MONGO_USER, password=MONGO_PASS)
+print("Created mongo client as user {} @ {}".format(MONGO_USER, MONGO_URI))
 
 bot = commands.Bot(command_prefix='!')
 
-
 force_stop = False
 user_stats = {}
-
-
 
 async def day_runner(cr, duration_hours=8):
     # launch duration_hours tasks for the whole day (once an hour)
@@ -55,12 +65,9 @@ async def day_runner(cr, duration_hours=8):
         if force_stop:
             break
 
-
 @bot.event
 async def on_ready():
     print('wellness bot is ready')
-
-
 
 @bot.command(name='start', help='Starts an 8-hour challenge runner')
 @in_wellness_channel
@@ -124,5 +131,24 @@ async def stats(ctx):
         await ctx.send('Sorry, empty stats')
     else:
         await ctx.send(msg)
+
+@bot.command(name='mongo', help='mongo transaction demo')
+@in_wellness_channel
+async def mongo(ctx):
+    print("Basic mongo transaction")
+    db = client.test_database
+    posts = db.posts
+    post = {
+        "author": "test",
+        "text": "hello from mongo",
+        "tags": ["mongodb", "python", "pymongo"],
+        "date": datetime.utcnow()
+    }
+    post_id = posts.insert_one(post).inserted_id
+    print("Mongo transaction successful")
+    await ctx.send("New sample entry posted with id: {}".format(post_id))
+    print("Starting basic query")
+    await ctx.send(posts.find_one())
+    print("Success")
 
 bot.run(TOKEN)
