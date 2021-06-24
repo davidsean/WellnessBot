@@ -21,6 +21,10 @@ build: ## build package dist
 publish: ## publish dist to pypi
 	@./scripts/publish.sh $(service)
 
-.PHONY: arm 
-arm: ## build arm server docker image
+.PHONY: x86 
+x86: ## build x86 server docker image
 	@./scripts/docker.sh
+
+.PHONY: compose 
+compose: ## build wellness bot for x86
+	@./scripts/compose.sh
