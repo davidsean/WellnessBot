@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 from app.db.client import Client
 from discord.ext.commands import Context, Bot
-from app.bot.runner import ChallengeRunner
+from app.scheduler.runner import ChallengeRunner
 from app.helpers.decorators import in_wellness_channel, log_user
 
 _log = logging.getLogger(__name__)
@@ -14,39 +14,30 @@ bot = Bot(command_prefix='!')
 
 @log_user
 @in_wellness_channel
-@bot.command(name='start', help='Start an 8-hour challenge runner')
+@bot.command(name='start', help='Schedules a set of challenges')
 async def start_day(ctx: Context):
-    global force_stop
-    force_stop = False
-    cr = ChallengeRunner(ctx, bot)
-    bot.loop.create_task(cr.day_runner())
+    bot.loop.create_task(cr._runner())
 
 
 @log_user
 @in_wellness_channel
 @bot.command(name='stop', help='Stop the challenge runner')
 async def stop_day(ctx: Context):
-    global force_stop
-    force_stop = True
-    await ctx.send("Day is over")
+    await ctx.send("Todays scheduled exercises have been cancelled.")
 
 
 @log_user
 @in_wellness_channel
 @bot.command(name='shutup', help='Stop the challenge runner')
 async def shutup(ctx: Context):
-    global force_stop
-    force_stop = True
     await ctx.send("Ok, goodbye")
 
 
 @log_user
 @in_wellness_channel
-@bot.command(name='challenge', help='Dispatch a random challenge')
+@bot.command(name='challenge', help='Dispatch a challenge now')
 async def challenge(ctx: Context):
-    global user_stats
-    cr = ChallengeRunner(ctx, bot)
-    users = await cr.post_challenge()
+    users = await
 
 
 @log_user
@@ -96,4 +87,5 @@ async def on_ready():
 
 
 def main():
+    cr = ChallengeRunner(bot)
     bot.run(os.getenv('DISCORD_TOKEN'))
