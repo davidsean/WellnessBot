@@ -13,7 +13,7 @@ help:
 test: ## run server locally sourcing tokens from .env
 	@./scripts/test.sh
 
-.PHONY: build 
+.PHONY: bd
 build: ## build package dist 
 	@./scripts/build.sh
 
@@ -21,10 +21,10 @@ build: ## build package dist
 publish: ## publish dist to pypi
 	@./scripts/publish.sh $(service)
 
-.PHONY: x86 
-x86: ## build x86 server docker image
+.PHONY: dev
+x86: ## build dev server docker image
 	@./scripts/docker.sh
 
 .PHONY: compose 
-compose: ## build wellness bot for x86
+compose: ## build wellness bot for dev
 	@./scripts/compose.sh
