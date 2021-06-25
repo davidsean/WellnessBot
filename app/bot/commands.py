@@ -10,13 +10,14 @@ from app.helpers.decorators import in_wellness_channel, log_user
 
 _log = logging.getLogger(__name__)
 bot = Bot(command_prefix='!')
+runner = ChallengeRunner(bot)
 
 
 @log_user
 @in_wellness_channel
 @bot.command(name='start', help='Schedules a set of challenges')
 async def start_day(ctx: Context):
-    bot.loop.create_task(cr._runner())
+    runner.start(ctx)
 
 
 @log_user
@@ -37,7 +38,7 @@ async def shutup(ctx: Context):
 @in_wellness_channel
 @bot.command(name='challenge', help='Dispatch a challenge now')
 async def challenge(ctx: Context):
-    users = await
+    await runner.queue()
 
 
 @log_user
@@ -87,5 +88,4 @@ async def on_ready():
 
 
 def main():
-    cr = ChallengeRunner(bot)
     bot.run(os.getenv('DISCORD_TOKEN'))

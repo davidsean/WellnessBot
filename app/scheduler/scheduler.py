@@ -15,6 +15,7 @@ Copyright © 2021 Incuvers. All rights reserved.
 Unauthorized copying of this file, via any medium is strictly prohibited
 Proprietary and confidential
 """
+import asyncio
 import logging
 import time
 from tabulate import tabulate
@@ -54,7 +55,7 @@ class Scheduler:
         while True:
             if self.sch.empty():
                 # TEMP while no protocol setpoints are pending (IDLE state)
-                time.sleep(1)
+                asyncio.sleep(1)
             else:
                 try:
                     self.sch.run()

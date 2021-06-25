@@ -1,4 +1,5 @@
 
+from app.bot.commands import challenge
 from datetime import datetime
 from app.scheduler.scheduler import Scheduler
 import asyncio
@@ -25,6 +26,7 @@ class ChallengeRunner(Scheduler):
     def __init__(self, bot: Bot):
         self._log = logging.getLogger(__name__)
         super().__init__()
+        self.ctx: Optional[Context] = None
         self.bot = bot
 
     async def _post(self, payload: str) -> Message:
@@ -38,8 +40,7 @@ class ChallengeRunner(Scheduler):
             await self._post("No challenges available")
             return
         payload = "@here Incoming Wellness Challenge!\
-            \nYou have {} seconds to finish this task.{}".format(
-            challenge.timeout, challenge.description)
+            \nYou have {} seconds to finish this task.{}".format(challenge.timeout, challenge.description)
         message: Message = await self._post(payload)
         await self._add_reactions(message)
         await asyncio.sleep(challenge.timeout)
@@ -77,12 +78,20 @@ class ChallengeRunner(Scheduler):
             self._log.exception(exc)
         return challenge
 
-    async def queue(self) -> None:
+    async def queue(self, day: bool = False) -> None:
         now = datetime.now().timestamp()
-        self.populate(int(now), 0, self.challenge())
-
-    async def start(self, challenges: int, interval: int):
-        now = datetime.now().timestamp()
-        for i in range(int(now), int(now + challenges * interval), interval):
-            self.populate(i, 0, self.challenge())
+        challenges = 10
+        interval = 3600
+        if not day:
+            self.populate(int(now), 0, self.challenge())
+        else:
+            for i in range(int(now), int(now + challenges * interval), interval):
+                self.populate(i, 0, self.challenge())
         self._log.info(self)
+
+    def start(self, ctx: Context) -> None:
+        self.ctx = ctx
+        # queue events for the day
+        await self.queue(day=True)
+        # start the runner
+        await self._runner()
