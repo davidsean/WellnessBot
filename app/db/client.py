@@ -1,9 +1,9 @@
 from app.db.models.challenge import Challenge
 import os
 import logging
-from typing import Optional, Type, TypeVar, Union
 from pymongo import MongoClient
-from app.exceptions.db import DbConnectionError, DbNotInitialized, ModelSchemaError, NullQueryResult
+from typing import Optional, TypeVar, Union
+from app.exceptions.db import DbNotInitialized, ModelSchemaError, NullQueryResult
 
 Model = Union[Challenge]
 _T = TypeVar('_T', bound=Model)
@@ -48,7 +48,7 @@ class Client:
         if collection is None:
             raise ModelSchemaError
         result = collection.insert_one(model.__dict__)
-        cls._log.info("Db insert successful with result: %s", result)
+        cls._log.info("Db insert successful with result id: %s", result.inserted_id)
         _id = str(result.inserted_id)
         return _id
 
