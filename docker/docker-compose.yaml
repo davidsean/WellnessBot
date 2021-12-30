@@ -20,7 +20,7 @@ services:
       - ../.env
     build:
       context: ../ 
-      dockerfile: docker/x86/Dockerfile
+      dockerfile: docker/dev/Dockerfile
     environment:
       MONGO_USER: root
       MONGO_PASS: rootpassword

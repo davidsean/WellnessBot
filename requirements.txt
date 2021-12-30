@@ -13,5 +13,6 @@ multidict==5.1.0
 rsa==3.4.2
 typing-extensions==3.7.4.3
 yarl==1.6.3
-PyYAML>=5.4
 pymongo
+threading_sched
+tabulate
