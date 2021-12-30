@@ -9,8 +9,6 @@ RUN apt update && \
 # install package locally (for development)
 COPY . .
 RUN python3 -m pip install .
-# install python package from pypi
-# RUN python3 -m pip install Wellness-Bot
 
 # run wellness bot
 CMD [ "start" ]
